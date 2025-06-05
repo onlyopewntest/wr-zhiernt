@@ -53,7 +53,7 @@ sed -i 's/option timeout 30/option timeout 60/g' package/system/rpcd/files/rpcd.
 sed -i 's#20) \* 1000#60) \* 1000#g' feeds/luci/modules/luci-base/htdocs/luci-static/resources/rpc.js
 
 # 修改默认ip
-sed -i "s/192.168.1.1/$LAN/g" package/base-files/files/bin/config_generate
+sed -i "s/192.168.1.1/10.0.0.1/g" package/base-files/files/bin/config_generate
 
 # 修改名称
 sed -i 's/OpenWrt/ZeroWrt/' package/base-files/files/bin/config_generate
@@ -296,6 +296,7 @@ EOF
 # 加入作者信息
 sed -i "s/DISTRIB_DESCRIPTION='*.*'/DISTRIB_DESCRIPTION='ZeroWrt-$(date +%Y%m%d)'/g"  package/base-files/files/etc/openwrt_release
 sed -i "s/DISTRIB_REVISION='*.*'/DISTRIB_REVISION=' By OPPEN321'/g" package/base-files/files/etc/openwrt_release
+sed -i 's|^OPENWRT_RELEASE=".*"|OPENWRT_RELEASE="ZeroWrt 标准版 @R250605 BY OPPEN321"|' package/base-files/files/usr/lib/os-release
 
 # CURRENT_DATE
 sed -i "/BUILD_DATE/d" package/base-files/files/usr/lib/os-release
@@ -376,7 +377,7 @@ sed -i 's/syslog/none/g' feeds/packages/admin/netdata/files/netdata.conf
 git clone https://$github/sbwml/luci-app-mosdns -b v5 package/new/mosdns
 
 # OpenAppFilter
-git clone https://$github/sbwml/OpenAppFilter --depth=1 package/new/OpenAppFilter
+git clone https://$GITEA_USERTNAME:$GITEA_PASSWORD@$gitea/OpenAppFilter package/new/OpenAppFilter
 
 # adguardhome
 git clone https://$GITEA_USERTNAME:$GITEA_PASSWORD@$gitea/luci-app-adguardhome package/new/luci-app-adguardhome
@@ -457,15 +458,15 @@ curl -s https://downloads.openwrt.org/releases/24.10.1/targets/x86/64/openwrt-24
 sed -i 's#grep '\''=\[ym\]'\'' \$(LINUX_DIR)/\.config\.set | LC_ALL=C sort | \$(MKHASH) md5 > \$(LINUX_DIR)/\.vermagic#cp \$(TOPDIR)/vermagic \$(LINUX_DIR)/.vermagic#g' include/kernel-defaults.mk
 
 # Toolchain Cache
-if [ "$BUILD_FAST" = "y" ]; then
-    TOOLCHAIN_URL=https://github.com/oppen321/openwrt_caches/releases/download/OpenWrt_Toolchain_Cache
-    curl -L -k ${TOOLCHAIN_URL}/toolchain_gcc13_x86_64.tar.zst -o toolchain.tar.zst $CURL_BAR
-    tar -I "zstd" -xf toolchain.tar.zst
-    rm -f toolchain.tar.zst
-    mkdir bin
-    find ./staging_dir/ -name '*' -exec touch {} \; >/dev/null 2>&1
-    find ./tmp/ -name '*' -exec touch {} \; >/dev/null 2>&1
-fi
+#if [ "$BUILD_FAST" = "y" ]; then
+#    TOOLCHAIN_URL=https://github.com/oppen321/openwrt_caches/releases/download/OpenWrt_Toolchain_Cache
+#    curl -L -k ${TOOLCHAIN_URL}/toolchain_gcc13_x86_64.tar.zst -o toolchain.tar.zst $CURL_BAR
+#    tar -I "zstd" -xf toolchain.tar.zst
+#    rm -f toolchain.tar.zst
+#    mkdir bin
+#    find ./staging_dir/ -name '*' -exec touch {} \; >/dev/null 2>&1
+#    find ./tmp/ -name '*' -exec touch {} \; >/dev/null 2>&1
+#fi
 
 # init openwrt config
 rm -rf tmp/*
@@ -473,4 +474,3 @@ rm -rf tmp/*
 # install feeds
 ./scripts/feeds update -a
 ./scripts/feeds install -a
-
