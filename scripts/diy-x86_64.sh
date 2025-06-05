@@ -308,7 +308,8 @@ git clone https://$GITEA_USERTNAME:$GITEA_PASSWORD@$gitea/packages_lang_golang -
 
 # luci-app-webdav
 git clone https://$github/sbwml/luci-app-webdav package/new/luci-app-webdav
-
+#新增 beardropper
+git clone https://$github/natelol/luci-app-beardropper /package/new/luci-app-beardropper
 # ddns - fix boot
 sed -i '/boot()/,+2d' feeds/packages/net/ddns-scripts/files/etc/init.d/ddns
 
